@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10-slim'
-            args '-u root'
-        }
-    }
+    agent any
 
     environment {
         FLASK_ENV = "development"
@@ -24,11 +19,18 @@ pipeline {
             }
         }
 
+        stage('Verify Python') {
+            steps {
+                sh '''
+                python --version || python3 --version
+                '''
+            }
+        }
+
         stage('Setup Python Venv') {
             steps {
                 sh '''
-                python --version
-                python -m venv venv
+                python3 -m venv venv || python -m venv venv
                 . venv/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
