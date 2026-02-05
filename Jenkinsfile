@@ -8,12 +8,14 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Setup Python Venv') {
             steps {
                 sh '''
-                    python3 --version
-                    pip3 install --upgrade pip
-                    pip3 install -r requirements.txt
+                python3 -m venv venv
+                . venv/bin/activate
+                python --version
+                pip install --upgrade pip
+                pip install -r requirements.txt
                 '''
             }
         }
@@ -21,7 +23,8 @@ pipeline {
         stage('Basic App Test') {
             steps {
                 sh '''
-                    python3 -c "import app; print('App import successful')"
+                . venv/bin/activate
+                python -c "import app; print('App import successful')"
                 '''
             }
         }
