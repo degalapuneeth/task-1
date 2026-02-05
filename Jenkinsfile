@@ -41,18 +41,18 @@ pipeline {
             }
         }
 
-        stage('Run Python Application') {
-            steps {
-                sh '''
-                . venv/bin/activate
-                echo "Starting Flask application..."
-                python app.py &
-                sleep 5
-                echo "Flask app started successfully"
-                '''
-            }
-        }
-    }
+    //     stage('Run Python Application') {
+    //         steps {
+    //             sh '''
+    //             . venv/bin/activate
+    //             echo "Starting Flask application..."
+    //             python app.py &
+    //             sleep 5
+    //             echo "Flask app started successfully"
+    //             '''
+    //         }
+    //     }
+       }
 
     post {
         success {
