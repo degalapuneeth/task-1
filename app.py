@@ -22,12 +22,12 @@ def get_db_connection():
     )
 
 # Database connection
-db = psycopg2.connect(
-    host=DB_HOST,
-    database=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWORD
-)
+# db = psycopg2.connect(
+#     host=DB_HOST,
+#     database=DB_NAME,
+#     user=DB_USER,
+#     password=DB_PASSWORD
+# )
 
 cursor = db.cursor()
 
@@ -99,4 +99,5 @@ def login():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
