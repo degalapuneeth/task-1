@@ -1,11 +1,15 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10-slim'
+            args '-u root'
+        }
+    }
 
     environment {
         FLASK_ENV = "development"
         FLASK_APP = "app.py"
 
-        // Dummy DB values for Jenkins run
         DB_HOST = "localhost"
         DB_NAME = "testdb"
         DB_USER = "testuser"
@@ -23,9 +27,9 @@ pipeline {
         stage('Setup Python Venv') {
             steps {
                 sh '''
-                python3 -m venv venv
-                . venv/bin/activate
                 python --version
+                python -m venv venv
+                . venv/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
@@ -40,19 +44,7 @@ pipeline {
                 '''
             }
         }
-
-    //     stage('Run Python Application') {
-    //         steps {
-    //             sh '''
-    //             . venv/bin/activate
-    //             echo "Starting Flask application..."
-    //             python app.py &
-    //             sleep 5
-    //             echo "Flask app started successfully"
-    //             '''
-    //         }
-    //     }
-       }
+    }
 
     post {
         success {
