@@ -13,10 +13,13 @@ app = Flask(__name__)
 CORS(app)
 
 # Read env variables
-DB_HOST = os.getenv("DB_HOST")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+def get_db_connection():
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST", "localhost"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "postgres"),
+        dbname=os.getenv("DB_NAME", "postgres")
+    )
 
 # Database connection
 db = psycopg2.connect(
@@ -96,3 +99,4 @@ def login():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
