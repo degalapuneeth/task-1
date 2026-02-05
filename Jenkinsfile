@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+        }
+    }
 
     stages {
         stage('Checkout') {
@@ -11,9 +15,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 --version
-                python3 -m pip install --upgrade pip
-                pip3 install -r requirements.txt
+                    python --version
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
                 '''
             }
         }
@@ -21,8 +25,7 @@ pipeline {
         stage('Basic App Test') {
             steps {
                 sh '''
-                echo "Testing application import"
-                python3 -c "import app; print('App import successful')"
+                    python -c "import app; print('App import successful')"
                 '''
             }
         }
@@ -37,3 +40,4 @@ pipeline {
         }
     }
 }
+   
