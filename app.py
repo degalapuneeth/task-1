@@ -1,7 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import psycopg2
-import re
 from werkzeug.security import check_password_hash, generate_password_hash
 from dotenv import load_dotenv
 import os
@@ -11,6 +10,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+# ---------- DB CONFIG ----------
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
@@ -26,9 +26,12 @@ def get_db_connection():
         password=DB_PASSWORD
     )
 
-username_pattern = r'^(?=.*[^a-zA-Z0-9])[a-zA-Z0-9_.@\- ]{2,50}$'
-password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&-]).{8,}$'
+# ---------- UI ROUTE ----------
+@app.route("/")
+def index():
+    return render_template("auth.html")
 
+# ---------- REGISTER ----------
 @app.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -40,19 +43,22 @@ def register():
 
     cur.execute("SELECT 1 FROM users WHERE username=%s", (username,))
     if cur.fetchone():
-        return jsonify({"success": False, "message": "User exists"})
+        cur.close()
+        conn.close()
+        return jsonify({"success": False, "message": "User already exists"})
 
-    hashed = generate_password_hash(password, method="scrypt")
+    hashed_password = generate_password_hash(password, method="scrypt")
     cur.execute(
         "INSERT INTO users (username, password) VALUES (%s, %s)",
-        (username, hashed)
+        (username, hashed_password)
     )
     conn.commit()
 
     cur.close()
     conn.close()
-    return jsonify({"success": True})
+    return jsonify({"success": True, "message": "Registration successful"})
 
+# ---------- LOGIN ----------
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -69,10 +75,13 @@ def login():
     conn.close()
 
     if not row:
-        return jsonify({"success": False})
+        return jsonify({"success": False, "message": "User not found"})
 
-    return jsonify({"success": check_password_hash(row[0], password)})
+    if check_password_hash(row[0], password):
+        return jsonify({"success": True, "message": "Login successful"})
+    else:
+        return jsonify({"success": False, "message": "Invalid credentials"})
 
+# ---------- RUN ----------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
