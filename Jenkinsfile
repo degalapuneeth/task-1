@@ -18,7 +18,11 @@ pipeline {
                 sh '''
                     python --version
 
-                    # Create venv in workspace (writable)
+                    # Install venv support (required for slim images)
+                    apt-get update
+                    apt-get install -y python3-venv
+
+                    # Create virtual environment
                     python -m venv venv
 
                     # Activate venv
@@ -27,7 +31,7 @@ pipeline {
                     # Upgrade pip inside venv
                     pip install --upgrade pip
 
-                    # Install requirements
+                    # Install dependencies
                     pip install -r requirements.txt
                 '''
             }
