@@ -20,8 +20,8 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 def get_db_connection():
     return psycopg2.connect(
         host=DB_HOST,
-        port=DB_PORT,
-        database=DB_NAME,
+        port=int(DB_PORT),
+        dbname=DB_NAME,
         user=DB_USER,
         password=DB_PASSWORD
     )
@@ -75,3 +75,4 @@ def login():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
