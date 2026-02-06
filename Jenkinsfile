@@ -16,9 +16,19 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python --version
-                pip install --upgrade pip
-                pip install -r requirements.txt
+                    python --version
+
+                    # Create venv in workspace (writable)
+                    python -m venv venv
+
+                    # Activate venv
+                    . venv/bin/activate
+
+                    # Upgrade pip inside venv
+                    pip install --upgrade pip
+
+                    # Install requirements
+                    pip install -r requirements.txt
                 '''
             }
         }
@@ -26,10 +36,10 @@ pipeline {
         stage('Basic App Test') {
             steps {
                 sh '''
-                python -c "import app; print('App import successful')"
+                    . venv/bin/activate
+                    python -c "import app; print('App import successful')"
                 '''
             }
         }
-
     }
 }
