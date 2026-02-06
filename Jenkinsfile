@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10-slim'
-            args '--user root'
-        }
-    }
+    agent any
 
     stages {
 
@@ -14,30 +9,40 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh '''
-                    python --version
-
-                    apt-get update
-                    apt-get install -y python3-venv
-
-                    python -m venv venv
-                    . venv/bin/activate
-
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
+                script {
+                    sh 'docker build -t login-app:latest .'
+                }
             }
         }
 
-        stage('Basic App Test') {
+        stage('Stop Existing Container') {
             steps {
-                sh '''
-                    . venv/bin/activate
-                    python -c "import app; print('App import successful')"
-                '''
+                script {
+                    sh '''
+                    if [ "$(docker ps -q -f name=login-container)" ]; then
+                        docker stop login-container
+                        docker rm login-container
+                    fi
+                    '''
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                script {
+                    sh '''
+                    docker run -d \
+                      -p 5000:5000 \
+                      --name login-container \
+                      --env-file .env \
+                      login-app:latest
+                    '''
+                }
             }
         }
     }
 }
+
