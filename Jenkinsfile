@@ -1,14 +1,8 @@
 pipeline {
-    agent any
-
-    environment {
-        FLASK_ENV = "development"
-        FLASK_APP = "app.py"
-
-        DB_HOST = "localhost"
-        DB_NAME = "testdb"
-        DB_USER = "testuser"
-        DB_PASSWORD = "testpass"
+    agent {
+        docker {
+            image 'python:3.10-slim'
+        }
     }
 
     stages {
@@ -19,19 +13,10 @@ pipeline {
             }
         }
 
-        stage('Verify Python') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
-                python --version || python3 --version
-                '''
-            }
-        }
-
-        stage('Setup Python Venv') {
-            steps {
-                sh '''
-                python3 -m venv venv || python -m venv venv
-                . venv/bin/activate
+                python --version
                 pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
@@ -41,19 +26,10 @@ pipeline {
         stage('Basic App Test') {
             steps {
                 sh '''
-                . venv/bin/activate
                 python -c "import app; print('App import successful')"
                 '''
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Pipeline completed successfully'
-        }
-        failure {
-            echo 'Pipeline failed'
-        }
     }
 }
