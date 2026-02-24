@@ -2,10 +2,10 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import psycopg2
 from werkzeug.security import check_password_hash, generate_password_hash
-from dotenv import load_dotenv
+
 import os
 
-load_dotenv()
+
 
 app = Flask(__name__)
 CORS(app)
