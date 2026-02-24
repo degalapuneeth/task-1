@@ -14,7 +14,7 @@ services:
     image: postgres:15
     container_name: postgres-db
     environment:
-      POSTGRES_DB: login_db
+      POSTGRES_DB: login_system
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
