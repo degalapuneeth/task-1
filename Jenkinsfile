@@ -11,10 +11,10 @@ pipeline {
                     cp $ENV_FILE .env
 
                     echo "Stopping old containers..."
-                    docker compose down || true
+                    docker compose down --remove-orphans || true
 
                     echo "Building and starting containers..."
-                    docker compose up -d --build
+                    docker compose up -d --build --force-recreate
                     '''
                 }
             }
@@ -25,6 +25,9 @@ pipeline {
                 sh '''
                 echo "Running containers:"
                 docker ps
+
+                echo "Checking application logs..."
+                docker compose logs app --tail=20
                 '''
             }
         }
