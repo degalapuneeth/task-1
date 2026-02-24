@@ -3,21 +3,20 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/degalapuneeth/task-1.git'
-            }
-        }
-
         stage('Build & Deploy') {
             steps {
-                sh '''
-                echo "Stopping old containers..."
-                docker-compose down || true
+                withCredentials([file(credentialsId: 'env-id', variable: 'ENV_FILE')]) {
+                    sh '''
+                    echo "Copying .env file..."
+                    cp $ENV_FILE .env
 
-                echo "Building and starting containers..."
-                docker-compose up -d --build
-                '''
+                    echo "Stopping old containers..."
+                    docker compose down || true
+
+                    echo "Building and starting containers..."
+                    docker compose up -d --build
+                    '''
+                }
             }
         }
 
