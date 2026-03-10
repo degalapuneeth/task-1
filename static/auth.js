@@ -1,4 +1,4 @@
-const apiUrl = "http://localhost:5000";
+const apiUrl = "";
 
 // username must contain a symbol
 const usernameRegex = /^(?=.*[^a-zA-Z0-9])[a-zA-Z0-9_.@\- ]{2,50}$/;
